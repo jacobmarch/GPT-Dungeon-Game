@@ -1,6 +1,6 @@
 from openai import OpenAI
 
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="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")
 
 # Symbols for entities
 EMPTY = ' '
@@ -27,40 +27,61 @@ grid[positions["friendly_ai"][0]][positions["friendly_ai"][1]] = FRIENDLY_AI
 grid[positions["trap"][0]][positions["trap"][1]] = TRAP
 
 def navigate_trap(player_input):
-    conversation = [
-        {"role": "system", "content": "You are the dungeon master narrating the outcome of a player's attempt to navigate or disarm a trap. The trap is a hidden pitfall covered with fragile planks disguised as solid ground."},
-        {"role": "user", "content": player_input}
-    ]
-    
-    response = client.chat.completions.create(model="gpt-4-turbo-preview",
-    messages=conversation)
-    
-    dm_response = response.choices[0].message.content
-    print(f"The dungeon master narrates: \"{dm_response}\"")
+    resolved = False
+    while not resolved:
+        conversation = [
+            {"role": "system", "content": "You are the dungeon master narrating the outcome of a player's attempt to navigate or disarm a trap. The trap is a hidden pitfall covered with fragile planks disguised as solid ground."},
+            {"role": "user", "content": player_input}
+        ]
+        
+        response = client.chat.completions.create(model="gpt-3.5-turbo",
+        messages=conversation)
+        
+        dm_response = response.choices[0].message.content
+        print(f"\"{dm_response}\"")
+        
+        # Check if the situation is resolved based on the response
+        # This can be a keyword or phrase indicating resolution
+        if "successfully" in dm_response or "fail" in dm_response:
+            resolved = True
+        else:
+            player_input = input("What do you do next? ")
+
 
 def encounter_enemy(player_input):
-    conversation = [
-        {"role": "system", "content": "You are the dungeon master. Narrate the outcome of a player's encounter with a goblin armed with a rusty sword. The player has a shield and a dagger."},
-        {"role": "user", "content": player_input}
-    ]
-    
-    response = client.chat.completions.create(model="gpt-4-turbo-preview",
-    messages=conversation)
-    
-    dm_response = response.choices[0].message.content
-    print(f"The dungeon master narrates: \"{dm_response}\"")
+    resolved = False
+    while not resolved:
+        conversation = [
+            {"role": "system", "content": "You are the dungeon master. Narrate the outcome of a player's encounter with a goblin armed with a rusty sword. The player has a shield and a dagger."},
+            {"role": "user", "content": player_input}
+        ]
+        
+        response = client.chat.completions.create(model="gpt-3.5-turbo",
+        messages=conversation)
+        
+        dm_response = response.choices[0].message.content
+        print(f"\"{dm_response}\"")
+        
+        # Check for resolution indicators
+        if "defeats the goblin" in dm_response or "is defeated" in dm_response:
+            resolved = True
+        else:
+            player_input = input("What do you do next? ")
+
     
 def interact_with_friendly(player_input):
     conversation = [
-        {"role": "system", "content": "You are the dungeon master. Narrate the outcome of a player's attempt to interact with a friendly AI. The player has a shield and a dagger."},
+        {"role": "system", "content": "You are the dungeon master. Narrate the outcome of a player's attempt to interact with a friendly wizard. The player has a shield and a dagger."},
         {"role": "user", "content": player_input}
     ]
     
-    response = client.chat.completions.create(model="gpt-4-turbo-preview",
+    response = client.chat.completions.create(model="gpt-3.5-turbo",
     messages=conversation)
     
     dm_response = response.choices[0].message.content
-    print(f"The dungeon master narrates: \"{dm_response}\"")
+    print(f"\"{dm_response}\"")
+
+
 
 
 def encounter_check(position):
