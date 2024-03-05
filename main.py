@@ -71,7 +71,7 @@ def encounter_enemy(player_input):
     
 def interact_with_friendly(player_input):
     conversation = [
-        {"role": "system", "content": "You are the dungeon master. Narrate the outcome of a player's attempt to interact with a friendly wizard. The player has a shield and a dagger."},
+        {"role": "system", "content": "You are the dungeon master in a fantasy RPG setting. A player has encountered a wise wizard. The player is allowed to make one request or ask one question. The wizard, known for his knowledge and magical abilities, will provide an answer, a magical item, or assistance, based on what he deems most helpful to the player's journey. After fulfilling the request, the wizard will leave, concluding the interaction. Your narration should include the wizard's response to the player's request, detail the item or information provided, and describe the wizard's departure in a way that feels meaningful and impactful."},
         {"role": "user", "content": player_input}
     ]
     
