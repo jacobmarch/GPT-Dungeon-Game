@@ -23,6 +23,26 @@ positions = {
     "trap": (1, 1)
 }
 
+encounter_status = {
+    "enemy": False,  # Initially not completed
+    "friendly_ai": False,
+    "trap": False
+}
+
+def encounter_check(position):
+    if position == positions["enemy"] and not encounter_status["enemy"]:  # Check if enemy encounter is active
+        player_input = input("You encounter a menacing goblin. What do you do? ")
+        if encounter_enemy(player_input):  # Returns True if completed
+            encounter_status["enemy"] = True  # Mark as completed
+    elif position == positions["friendly_ai"] and not encounter_status["friendly_ai"]:
+        player_input = input("A wise wizard greets you. What do you ask? ")
+        if interact_with_friendly(player_input): 
+            encounter_status["friendly_ai"] = True 
+    elif position == positions["trap"] and not encounter_status["trap"]:
+        player_input = input("A hidden trap lies before you. How do you proceed? ")
+        if navigate_trap(player_input): 
+            encounter_status["trap"] = True 
+
 # Place entities on the grid
 grid[positions["player"][0]][positions["player"][1]] = PLAYER
 grid[positions["enemy"][0]][positions["enemy"][1]] = ENEMY
@@ -58,16 +78,25 @@ def navigate_trap(player_input):
 
     conversation.append({"role": "system", "content": "The outcome of this encounter depends entirely on the player's actions and your interpretation of the situation. If the player successfully navigates or disarms the trap, narrate the outcome and include the phrase 'Encounter Completed'. If the player fails to overcome the trap, describe the consequences."})  
 
-    conversation.append({"role": "user", "content": player_input})
+    encounter_completed = False
+    while not encounter_completed:
+        conversation.append({"role": "user", "content": player_input})
 
-    response = client.chat.completions.create(model="gpt-3.5-turbo", messages=conversation)
-    dm_response = response.choices[0].message.content
-    print(f"\"{dm_response}\"")
+        response = client.chat.completions.create(model="gpt-3.5-turbo", messages=conversation)
+        dm_response = response.choices[0].message.content
+        print(f"\"{dm_response}\"")
 
-    conversation_history.append({"role": "system", "content": dm_response}) 
-    conversation_history.clear() 
+        conversation_history.append({"role": "system", "content": dm_response}) 
 
-    return "Encounter Completed" in dm_response  
+        encounter_completed = "Encounter Completed" in dm_response  
+
+        if not encounter_completed:
+            player_input = input("What do you do next? ") 
+    
+    conversation_history.clear()  # Clear history after each attempt
+    
+    return True
+
 
 def encounter_enemy(player_input):
     context = retrieve_context("enemy")
@@ -78,18 +107,26 @@ def encounter_enemy(player_input):
     if context:
         conversation.append({"role": "system", "content": context}) 
 
-    conversation.append({"role": "system", "content": "The outcome of this encounter depends entirely on the player's actions and your interpretation of the situation. If the player successfully defeats the goblin, narrate the outcome and include the phrase 'Encounter Completed'. If the goblin overcomes the player, describe the consequences."}) 
+    conversation.append({"role": "system", "content": "The outcome of this encounter depends entirely on the player's actions and your interpretation of the situation. If the player successfully defeats the goblin, narrate the outcome and include the phrase 'Encounter Completed'. If the goblin overcomes the player, describe the consequences."})
 
-    conversation.append({"role": "user", "content": player_input})
+    encounter_completed = False
+    while not encounter_completed:
+        conversation.append({"role": "user", "content": player_input})
 
-    response = client.chat.completions.create(model="gpt-3.5-turbo", messages=conversation)
-    dm_response = response.choices[0].message.content
-    print(f"\"{dm_response}\"")
+        response = client.chat.completions.create(model="gpt-3.5-turbo", messages=conversation)
+        dm_response = response.choices[0].message.content
+        print(f"\"{dm_response}\"")
 
-    conversation_history.append({"role": "system", "content": dm_response}) 
-    conversation_history.clear() 
+        conversation_history.append({"role": "system", "content": dm_response}) 
 
-    return "Encounter Completed" in dm_response  
+        encounter_completed = "Encounter Completed" in dm_response  
+
+        if not encounter_completed:
+            player_input = input("What do you do next? ")
+    
+    conversation_history.clear()
+    return True
+
 
 def interact_with_friendly(player_input):
     context = retrieve_context("friendly") 
@@ -108,20 +145,8 @@ def interact_with_friendly(player_input):
 
     conversation_history.append({"role": "system", "content": dm_response}) 
     conversation_history.clear()  # Clear history after wizard interaction
-
-
-
-
-def encounter_check(position):
-    if position == positions["enemy"]:
-        player_input = input("You encounter a menacing goblin. What do you do? ")
-        encounter_enemy(player_input)
-    elif position == positions["friendly_ai"]:
-        player_input = input("A wise wizard greets you. What do you ask? ")
-        interact_with_friendly(player_input)
-    elif position == positions["trap"]:
-        player_input = input("A hidden trap lies before you. How do you proceed? ")
-        navigate_trap(player_input)
+    
+    return True
 
 
 def display_grid():
