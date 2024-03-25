@@ -1,3 +1,4 @@
 Dungeon-Game/*
 Constants.py
 __pycache__/Constants.cpython-311.pyc
+*.pyc

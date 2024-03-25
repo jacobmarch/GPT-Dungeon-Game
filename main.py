@@ -82,7 +82,7 @@ def navigate_trap(player_input):
     while not encounter_completed:
         conversation.append({"role": "user", "content": player_input})
 
-        response = client.chat.completions.create(model="gpt-3.5-turbo", messages=conversation)
+        response = client.chat.completions.create(model="ft:gpt-3.5-turbo-0125:personal::96hGx0cI", messages=conversation)
         dm_response = response.choices[0].message.content
         print(f"\"{dm_response}\"")
 
@@ -113,7 +113,7 @@ def encounter_enemy(player_input):
     while not encounter_completed:
         conversation.append({"role": "user", "content": player_input})
 
-        response = client.chat.completions.create(model="gpt-3.5-turbo", messages=conversation)
+        response = client.chat.completions.create(model="ft:gpt-3.5-turbo-0125:personal::96hGx0cI", messages=conversation)
         dm_response = response.choices[0].message.content
         print(f"\"{dm_response}\"")
 
@@ -139,7 +139,7 @@ def interact_with_friendly(player_input):
 
     conversation.append({"role": "user", "content": player_input})
 
-    response = client.chat.completions.create(model="gpt-3.5-turbo", messages=conversation)
+    response = client.chat.completions.create(model="ft:gpt-3.5-turbo-0125:personal::96hGx0cI", messages=conversation)
     dm_response = response.choices[0].message.content
     print(f"\"{dm_response}\"")
 
