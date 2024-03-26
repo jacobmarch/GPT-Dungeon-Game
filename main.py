@@ -99,36 +99,46 @@ def load_player_info():
 
 def navigate_trap(player_input, player_info):
     context = retrieve_context("trap")
-    conversation = conversation_history + [ 
+    conversation = conversation_history + [
         {"role": "system", "content": "You are the dungeon master narrating the outcome of a player's attempt to navigate or disarm a trap. The trap is a hidden pitfall covered with fragile planks disguised as solid ground."},
     ]
 
     if context:
-        conversation.append({"role": "system", "content": context}) 
+        conversation.append({"role": "system", "content": context})
 
     conversation.append({"role": "system", "content": f"Player Information:\nSkills: {', '.join(player_info['skills'])}\nSpells: {', '.join(player_info['spells'])}\nEquipment: {', '.join(player_info['equipment'])}"})
 
-    conversation.append({"role": "system", "content": "The outcome of this encounter depends entirely on the player's actions and your interpretation of the situation. If the player successfully navigates or disarms the trap, narrate the outcome and include the phrase 'Encounter Completed'. If the player fails to overcome the trap, describe the consequences. Please format your response as follows:\n\nNarrative: [Describe what happened after the player's action]\n\nGAIN ITEM item_name (if the player gained an item)\nGAIN SKILL skill_name (if the player gained a skill)\nGAIN SPELL spell_name (if the player gained a spell)\nLOST ITEM item_name (if the player lost an item or had it changed to a different item)\nLOST SKILL skill_name (if the player lost a skill)\nLOST SPELL spell_name (if the player lost a spell)\nDAMAGE (if the player was harmed in some way)"})  
+    conversation.append({"role": "system", "content": "Guide the player through the process of navigating or disarming the trap. Provide descriptions and prompts based on the player's actions. Do not include the phrase 'Encounter Completed' until the player has successfully navigated past the trap or disarmed it. If the player fails to overcome the trap, describe the consequences without using 'Encounter Completed'. Do not include any questions at the end of your message to prompt the player to make a new decision. If the player has navigated past the trap or disarmed it, describe the consequences using the phrase 'Encounter Completed'. Please format your response as follows:\n\nNarrative: [Describe what happened after the player's action]\n\nGAIN ITEM item_name (if the player gained an item)\nGAIN SKILL skill_name (if the player gained a skill)\nGAIN SPELL spell_name (if the player gained a spell)\nLOST ITEM item_name (if the player lost an item or had it changed to a different item)\nLOST SKILL skill_name (if the player lost a skill)\nLOST SPELL spell_name (if the player lost a spell)\nDAMAGE (if the player was harmed in some way)"})
 
     encounter_completed = False
     while not encounter_completed:
-        conversation.append({"role": "user", "content": player_input})
+        conversation_context = conversation.copy()
+        conversation_context.append({"role": "user", "content": player_input})
 
-        response = client.chat.completions.create(model="ft:gpt-3.5-turbo-0125:personal::96kWJrDA", messages=conversation)
+        response = client.chat.completions.create(model="ft:gpt-3.5-turbo-0125:personal::96kWJrDA", messages=[
+            {"role": "system", "content": "Context:"},
+            {"role": "system", "content": "\n".join([msg["content"] for msg in conversation])},
+            {"role": "system", "content": "User Input:"},
+            {"role": "user", "content": player_input}
+        ])
+
         dm_response = response.choices[0].message.content
         print(f"\"{dm_response}\"")
 
-        conversation_history.append({"role": "system", "content": dm_response}) 
-
-        encounter_completed = "Encounter Completed" in dm_response  
+        conversation.append({"role": "system", "content": dm_response})
 
         parse_ai_response(dm_response, player_info)
 
+        # Check for specific keywords or phrases that indicate the trap has been overcome
+        encounter_completed = any(keyword in dm_response.lower() for keyword in ["navigate past", "disarm", "overcome", "avoid", "bypass", "encounter completed"])
+
         if not encounter_completed:
-            player_input = input("What do you do next? ") 
-    
+            player_input = input("What do you do next? ")
+        else:
+            conversation.append({"role": "system", "content": "Encounter Completed"})
+
     conversation_history.clear()  # Clear history after each attempt
-    
+
     return True
 
 def encounter_enemy(player_input, player_info):
@@ -138,29 +148,39 @@ def encounter_enemy(player_input, player_info):
     ]
 
     if context:
-        conversation.append({"role": "system", "content": context}) 
+        conversation.append({"role": "system", "content": context})
 
     conversation.append({"role": "system", "content": f"Player Information:\nSkills: {', '.join(player_info['skills'])}\nSpells: {', '.join(player_info['spells'])}\nEquipment: {', '.join(player_info['equipment'])}"})
 
-    conversation.append({"role": "system", "content": "The outcome of this encounter depends entirely on the player's actions and your interpretation of the situation. If the player successfully defeats the goblin, narrate the outcome and include the phrase 'Encounter Completed'. If the goblin overcomes the player, describe the consequences. Please format your response as follows:\n\nNarrative: [Describe what happened after the player's action]\n\nGAIN ITEM item_name (if the player gained an item)\nGAIN SKILL skill_name (if the player gained a skill)\nGAIN SPELL spell_name (if the player gained a spell)\nLOST ITEM item_name (if the player lost an item or had it changed to a different item)\nLOST SKILL skill_name (if the player lost a skill)\nLOST SPELL spell_name (if the player lost a spell)\nDAMAGE (if the player was harmed in some way)"})
+    conversation.append({"role": "system", "content": "Guide the player through the process of fighting the goblin. Provide descriptions and prompts based on the player's actions. Do not include the phrase 'Encounter Completed' until the player has successfully defeated the goblin or escaped from the encounter. If the player fails to overcome the goblin, describe the consequences without using 'Encounter Completed'. Do not include any questions at the end of your message. If the player has defeated the enemy or escaped, describe the consequences using the phrase 'Encounter Completed'. Please format your response as follows:\n\nNarrative: [Describe what happened after the player's action]\n\nGAIN ITEM item_name (if the player gained an item)\nGAIN SKILL skill_name (if the player gained a skill)\nGAIN SPELL spell_name (if the player gained a spell)\nLOST ITEM item_name (if the player lost an item or had it changed to a different item)\nLOST SKILL skill_name (if the player lost a skill)\nLOST SPELL spell_name (if the player lost a spell)\nDAMAGE (if the player was harmed in some way)\nOnly include the LOST ITEM, GAIN SKILL, etc. if it actually is updating something. Otherwise, if the player does not learn anything, please do not include that as a part of the message."})
 
     encounter_completed = False
     while not encounter_completed:
-        conversation.append({"role": "user", "content": player_input})
+        conversation_context = conversation.copy()
+        conversation_context.append({"role": "user", "content": player_input})
 
-        response = client.chat.completions.create(model="ft:gpt-3.5-turbo-0125:personal::96kWJrDA", messages=conversation)
+        response = client.chat.completions.create(model="ft:gpt-3.5-turbo-0125:personal::96kWJrDA", messages=[
+            {"role": "system", "content": "Context:"},
+            {"role": "system", "content": "\n".join([msg["content"] for msg in conversation])},
+            {"role": "system", "content": "User Input:"},
+            {"role": "user", "content": player_input}
+        ])
+
         dm_response = response.choices[0].message.content
         print(f"\"{dm_response}\"")
 
-        conversation_history.append({"role": "system", "content": dm_response}) 
-
-        encounter_completed = "Encounter Completed" in dm_response  
+        conversation.append({"role": "system", "content": dm_response})
 
         parse_ai_response(dm_response, player_info)
 
+        # Check for specific keywords or phrases that indicate the goblin has been defeated or the player has escaped
+        encounter_completed = any(keyword in dm_response.lower() for keyword in ["defeat", "escape", "overcome", "encounter completed"])
+
         if not encounter_completed:
             player_input = input("What do you do next? ")
-    
+        else:
+            conversation.append({"role": "system", "content": "Encounter Completed"})
+
     conversation_history.clear()
     return True
 

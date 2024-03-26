@@ -13,7 +13,8 @@
   "player": {
     "skills": [
       "Stealth",
-      "Lockpicking"
+      "Lockpicking",
+      "Perception"
     ],
     "spells": [
       "Fireball",
