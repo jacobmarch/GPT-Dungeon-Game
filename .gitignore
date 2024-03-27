@@ -3,3 +3,4 @@ Constants.py
 __pycache__/Constants.cpython-311.pyc
 training_data.jsonl
 validation.jsonl
+*.pyc

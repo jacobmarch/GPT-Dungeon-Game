@@ -1,0 +1,29 @@
+{
+  "scenarios": {
+    "trap": {
+      "description": "A hidden pitfall covered with fragile planks disguised as solid ground."
+    },
+    "enemy": {
+      "description": "A menacing goblin armed with a rusty sword."
+    },
+    "friendly": {
+      "description": "A wise wizard known for his knowledge and magical abilities."
+    }
+  },
+  "player": {
+    "skills": [
+      "Stealth",
+      "Lockpicking",
+      "Perception"
+    ],
+    "spells": [
+      "Fireball",
+      "Healing",
+      "Shielding Aura"
+    ],
+    "equipment": [
+      "Dagger",
+      "Shield"
+    ]
+  }
+}
