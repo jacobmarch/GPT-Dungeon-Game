@@ -42,7 +42,7 @@ def parse_ai_response(response, player_info):
         elif line.startswith("GAIN SPELL"):
             spell = line.split("GAIN SPELL")[1].strip()
             player_info["spells"].append(spell)
-        elif line.startswith("LOST ITEM"):
+        elif line.startswith("LOST ITEM"): 
             item = line.split("LOST ITEM")[1].strip()
             if item in player_info["equipment"]:
                 player_info["equipment"].remove(item)
