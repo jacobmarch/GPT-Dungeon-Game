@@ -1,0 +1,43 @@
+{
+    "Traps": [
+      {
+        "type": "Pitfall traps",
+        "details": "Pitfall traps are often concealed with leaves and branches. Carefully investigating the ground might reveal signs of disturbance. Disarming a pitfall might involve finding its triggering mechanism or carefully wedging the cover open to prevent it from dropping."
+      },
+      {
+        "type": "Poison dart traps",
+        "details": "Poison dart traps are triggered by pressure plates or tripwires. They launch poisoned darts at the victim. Spotting the trigger mechanism or the dart holes in the walls is crucial. Disarming them might require precise timing or using an object to safely trigger them from a distance."
+      },
+      {
+        "type": "Spiked walls",
+        "details": "Spiked walls are pressure-activated traps that slam together, crushing anything between them. They often have a distinct pattern on the floor or walls. Jamming the mechanism with a sturdy object or finding the hidden switch can prevent them from activating."
+      }
+    ],
+    "Enemies": [
+      {
+        "type": "Goblins",
+        "details": "Goblins are often armed with crude but dangerous weapons. They rely on surprise and aggression. Blocking their attacks with a shield and aiming for quick counterattacks can be effective. Goblins are not particularly intelligent and are easily distracted.",
+        "weapons": ["Sword", "Club", "Dagger", "Unarmed"],
+        "health": 8
+      },
+      {
+        "type": "Skeletons",
+        "details": "Skeletons are undead warriors that wield ancient weapons with unnerving skill. They are resistant to most forms of damage but are vulnerable to blunt weapons and holy magic. Skeletons often attack in groups and can reassemble themselves if not completely destroyed.",
+        "weapons": ["Sword", "Mace", "Axe", "Unarmed", "Spear", "Dagger", "Shield"]
+      },
+      {
+        "type": "Mimics",
+        "details": "Mimics are shapeshifting creatures that disguise themselves as treasure chests or other objects to lure in unsuspecting adventurers. They have powerful bite attacks and can adhere to their victims. Fire and acid are effective against them. Checking chests for subtle movements or inconsistencies can help identify mimics."
+      }
+    ],
+    "Friendly Characters": [
+      {
+        "type": "Wizards",
+        "details": "Wizards are fonts of knowledge and possess some magical abilities. They may offer guidance, magical items, or direct assistance. Requests should be clear and concise. A wise wizard's aid often aligns with the greater challenges the player might face later in their journey."
+      },
+      {
+        "type": "Blacksmiths",
+        "details": "Blacksmiths are skilled craftsmen who can repair, upgrade, or create new weapons and armor. They often require specific materials or payment for their services. Befriending a blacksmith can lead to discounts or unique item opportunities."
+      }
+    ]
+  }

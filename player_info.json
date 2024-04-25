@@ -1,0 +1,21 @@
+{
+  "player": {
+    "skills": [
+      "Stealth",
+      "Lockpicking",
+      "Perception"
+    ],
+    "spells": [
+      "Fireball",
+      "Healing",
+      "Shielding Aura",
+      "Arcane Sigil",
+      "Shadow Manipulation"
+    ],
+    "equipment": [
+      "Dagger",
+      "Shield"
+    ],
+    "health": 20
+  }
+}
