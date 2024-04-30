@@ -1,5 +1,5 @@
 from openai import OpenAI
-from Constants import API_KEY
+from FlaskApp.Constants import API_KEY
 import json
 import random
 
