@@ -23,6 +23,11 @@ def home():
         init_game()
     return render_template('game.html', grid=session['grid'])
 
+@app.route('/reset')
+def reset_game():
+    init_game()
+    return redirect(url_for('home'))
+
 def move_player(direction):
     positions = session['positions']
     grid = session['grid']
