@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Grid Game</title>
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-gap: 5px;
+        }
+        .grid-item {
+            width: 50px;
+            height: 50px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid black;
+        }
+        #message-box {
+            margin-top: 10px;
+        }
+        #inventory-box {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-container">
+        {% for row in grid %}
+            {% for cell in row %}
+                <div class="grid-item">{{ cell }}</div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    <div id="message-box">Welcome to the Grid Game!</div>
+    <div id="inventory-box">
+        <h3>Inventory:</h3>
+        <ul id="inventory-list"></ul>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('keydown', function(event) {
+                const keyName = event.key;
+                let direction = null;
+                switch (keyName) {
+                    case 'ArrowUp':
+                        direction = 'up';
+                        break;
+                    case 'ArrowDown':
+                        direction = 'down';
+                        break;
+                    case 'ArrowLeft':
+                        direction = 'left';
+                        break;
+                    case 'ArrowRight':
+                        direction = 'right';
+                        break;
+                }
+                if (direction) {
+                    fetch('{{ url_for("move", direction="") }}' + direction)
+                        .then(response => response.json())
+                        .then(data => {
+                            updateGame(data);
+                        });
+                }
+            });
+        });
+
+        function updateGrid(grid) {
+            const gridContainer = document.querySelector('.grid-container');
+            gridContainer.innerHTML = '';
+            grid.forEach(row => {
+                row.forEach(cell => {
+                    const cellDiv = document.createElement('div');
+                    cellDiv.className = 'grid-item';
+                    cellDiv.textContent = cell;
+                    gridContainer.appendChild(cellDiv);
+                });
+            });
+        }
+
+        function updateGame(data) {
+            updateGrid(data.grid);
+            document.getElementById('message-box').textContent = data.message;
+            updateInventory(data.inventory);
+        }
+
+        function updateInventory(inventory) {
+            const inventoryList = document.getElementById('inventory-list');
+            inventoryList.innerHTML = '';
+            inventory.forEach(item => {
+                const itemElement = document.createElement('li');
+                itemElement.textContent = item;
+                inventoryList.appendChild(itemElement);
+            });
+        }
+    </script>
+</body>
+</html>
